@@ -1,0 +1,8 @@
+<ul class="main-nav">
+  <li><a href="{% url 'shop:index' %}">Homepage</a></li>
+  <li {% if item_category %} data-active="{{ item_category.slug }}" {% endif %}>
+    <a href="{% url 'shop:shop' %}">Shop</a>
+  </li>
+  <li><a href="{% url 'shop:contact' %}">Contact</a></li>
+  <li><a href="{% url 'shop:check_order' %}">Check Order</a></li>
+</ul>

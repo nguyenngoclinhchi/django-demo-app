@@ -1,0 +1,21 @@
+<!-- PAGE INDEX ONLY APPEARS ONCE IN OUR PROCESS SO NO NEED TO CREATE SUB-PAGE FOR IT, EXTENDS DIRECTLY FROM LAYOUT-MAIN -->
+{% extends "layout-main.html" %} {% load static %} {% block main_content %}
+
+<!-- Trending Area Start -->
+
+{% include 'pages/index/trending.html' %}
+
+<!-- Whats New Start -->
+<section class="whats-news-area pb-20 gray-bg">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        {% include 'pages/index/category_news.html' %}
+      </div>
+      <div class="col-lg-4">{% include 'elements/sidebar.html' %}</div>
+    </div>
+  </div>
+</section>
+<!-- Whats New End -->
+
+{% endblock %}

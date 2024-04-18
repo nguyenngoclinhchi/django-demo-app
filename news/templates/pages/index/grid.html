@@ -1,0 +1,7 @@
+{% load render_share %}
+
+{% for item_child in item.article_filter|slice:":4" %}
+
+{% render_share 'grid.html' item_child %}
+
+{% endfor %}

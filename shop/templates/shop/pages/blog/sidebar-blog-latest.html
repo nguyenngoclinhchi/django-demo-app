@@ -1,0 +1,19 @@
+<div class="latest-product__text">
+  <h4>Related Blogs</h4>
+  <div class="latest-product__slider owl-carousel">
+    {% for product_group in items_blog_related %}
+    <div class="latest-prdouct__slider__item">
+      {% for item in product_group %}
+      <a href="{{ item.get_absolute_url }}" class="latest-product__item">
+        <div class="latest-product__item__pic" style="width: 35%">
+          <img src="{{ item.image.url }}" alt="" style="width: 100%" />
+        </div>
+        <div class="latest-product__item__text">
+          <h6>{{ item.name|truncatewords:8 }}</h6>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>

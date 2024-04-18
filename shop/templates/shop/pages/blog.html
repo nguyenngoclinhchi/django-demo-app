@@ -1,0 +1,35 @@
+{% extends "shop/layout.html" %} {% load static %} {% load render_share_shop %}
+{% block content %}
+<section class="product spad">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-5">
+        {% include 'shop/pages/blog/sidebar.html' %}
+      </div>
+      <div class="col-lg-9 col-md-7">
+        <div class="single-post">
+          <div class="feature-img">
+            <img
+              class="img-fluid"
+              src="{{ item_blog.image.url }}"
+              alt=""
+              style="min-width: 100%"
+            />
+          </div>
+          <div class="blog_details">
+            <h2>{{ item_blog.name }}</h2>
+            <ul class="blog-info-link mt-3 mb-4">
+              <li><i class="fa fa-user"></i> Admin</li>
+              <li>
+                <i class="fa fa-calendar"></i>
+                {{ item_blog.publish_date|date:"M d,Y" }}
+              </li>
+            </ul>
+            <div style="min-width: 100%">{{ item_blog.content|safe }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

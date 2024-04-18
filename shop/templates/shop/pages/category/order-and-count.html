@@ -1,0 +1,16 @@
+{% load query_to_string %}
+
+<div class="col-lg-4 col-md-5">
+  <div class="filter__sort">
+    <span>ORDER BY PRICE</span>
+    <select id="sort-product">
+      <option value="{% query_to_string params 'order' '-price' %}" data-active="-price">Decreasing</option>
+      <option value="{% query_to_string params 'order' 'price' %}" data-active="price">Increasing</option>
+    </select>
+  </div>
+</div>
+<div class="col-lg-4 col-md-4">
+  <div class="filter__found text-right">
+    <h6><span>{{ products_count }}</span> Products</h6>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<!---This section is a form, having a button submit, when the user
+press the button, the form is directed to action, with method GET --->
+
+<h4>Price</h4>
+<div class="price-range-wrap">
+  <div class="range-slider">
+    <form
+      action="{% if item_category %} {{ item.get_absolute_url }} {% else %} {% url 'shop:shop' %} {% endif %}"
+      method="get"
+    >
+      <div class="row justify-content-between">
+        <div class="col">
+          <input
+            type="text"
+            class="form-control"
+            name="minPrice"
+            placeholder="From"
+            value="{{ params.minPrice }}"
+          />
+        </div>
+        <div class="col">
+          <input
+            type="text"
+            class="form-control"
+            name="maxPrice"
+            placeholder="To"
+            value="{{ params.maxPrice }}"
+          />
+        </div>
+      </div>
+      {% if params.order != '-price' %}
+      <input
+        type="hidden"
+        class="form-control"
+        name="order"
+        value="price"
+      />
+      {% endif %}
+
+      {% if params.planting %}
+      <input
+        type="hidden"
+        class="form-control"
+        name="planting"
+        value="{{ params.planting }}"
+      />
+      {% endif %}
+      <button type="submit" class="price-filter-btn">Apply</button>
+    </form>
+  </div>
+</div>

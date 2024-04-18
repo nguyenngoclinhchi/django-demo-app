@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Means-Regular-Web';
+    font-weight: 400;
+    font-style: normal;
+    src: url("static/shop/assets/fonts/Means-Regular-Web.woff2") format('woff2');
+}
+html, body {
+    font-family: "Means-Regular-Web";
+}

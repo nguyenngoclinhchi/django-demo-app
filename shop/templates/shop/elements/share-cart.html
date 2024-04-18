@@ -1,0 +1,12 @@
+{% load format_currency_vn %}
+<ul>
+  <li>
+    <a href="{% url 'shop:cart' %}">
+      <i class="fa fa-shopping-bag"></i> 
+      <span>{{ item_cart_info_menu.quantity_cart }}</span>
+    </a>
+  </li>
+</ul>
+<div class="header__cart__price">Order Total: 
+  <span>{{ item_cart_info_menu.total_cart|format_currency_vn }}</span>
+</div>

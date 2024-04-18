@@ -1,0 +1,105 @@
+{% extends "shop/layout.html" %}
+{% load static %} 
+{% load check_and_show_active_status %}
+
+{% block content %}
+<!-- Checkout Section Begin -->
+<section class="checkout spad">
+  <div class="container">
+    <div class="checkout__form">
+      <h4>Order Checking</h4>
+      <form
+        action="{% url 'shop:check_order' %}"
+        method="POST"
+        class="mt-3 mb-3"
+      >
+        {% csrf_token %}
+        <div class="checkout__input d-flex justify-content-center">
+          <input
+            type="text"
+            style="width: 85%"
+            placeholder="Nhập mã đơn hàng..."
+            name="code"
+            value="{{ order_code }}"
+          />
+          <button type="submit" class="site-btn" style="width: 15%">
+            Check
+          </button>
+        </div>
+      </form>
+      
+      {% if item_order %}
+      <article class="card">
+        <header class="card-header">Order Information</header>
+        <div class="card-body">
+          <h6>Mã Đơn Hàng: {{ item_order.code }}</h6>
+          <article class="card">
+            <div class="card-body row">
+              <div class="col">
+                <strong>Date of placing order:</strong> 
+                <br />
+                {{ item_order.created|date:"d/m/Y" }}
+              </div>
+              <div class="col">
+                <strong>Name of receiver:</strong> 
+                <br />
+                {{ item_order.name }}
+              </div>
+              <div class="col">
+                <strong>Phone number:</strong> <br />
+                <i class="fa fa-phone"></i> 
+                {{ item_order.phone }}
+              </div>
+              <div class="col">
+                <strong>Address:</strong> <br />
+                {{ item_order.address }}
+              </div>
+            </div>
+          </article>
+
+          <div class="track">
+            <div class="step {% check_and_show_active_status item_order.status 'order' %}">
+              <span class="icon">
+                <i class="fa fa-exclamation-circle"></i>
+              </span>
+              <span class="text">Waiting to be confimed</span>
+            </div>
+            <div class="step {% check_and_show_active_status item_order.status 'confirm' %}">
+              <span class="icon"> 
+                <i class="fa fa-check"></i> 
+              </span>
+              <span class="text">Confimed</span>
+            </div>
+            <div class="step {% check_and_show_active_status item_order.status 'delivery' %}">
+              <span class="icon"> 
+                <i class="fa fa-truck"></i> 
+              </span>
+              <span class="text">On the way</span>
+            </div>
+            <div class="step {% check_and_show_active_status item_order.status 'finish' %}">
+              <span class="icon"> 
+                <i class="fa fa-home"></i> 
+              </span>
+              <span class="text">Successful delivery</span>
+            </div>
+          </div>
+          <hr />
+        </div>
+      </article>
+      {% endif %}
+
+      {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+      {% endif %}
+
+      {% if not item_order %}
+      <img
+        src="{% static 'shop/assets/img/order-tracking.png' %}"
+        class="mt-3"
+      />
+      {% endif %}
+    </div>
+  </div>
+</section>
+<!-- Checkout Section End -->
+{% endblock %}

@@ -10,7 +10,7 @@ APP_VALUE_ORDER_STATUS_DELIVERY = "delivery"
 APP_VALUE_ORDER_STATUS_FINISH = "finish"
 
 APP_VALUE_LAYOUT_CHOICE = (
-    ('list', 'List'), 
+    ('list', 'List'),
     ('grid', 'Grid')
 )
 APP_VALUE_STATUS_CHOICE = (
@@ -51,6 +51,7 @@ TABLE_PRODUCT_SHOW = "Product"
 TABLE_ORDER_SHOW = "Order"
 TABLE_ORDER_ITEM_SHOW = "Order Item"
 TABLE_BLOG_SHOW = "Blog"
+TABLE_COMMENT_SHOW = "Comment"
 
 NOTIFY_ORDER_SUCCESS = "Thank you for placing order with us"
 NOTIFY_CONTACT_SUCCESS = "Thank you for contacting us"

@@ -12,6 +12,7 @@ from .products import PRODUCTS
 def add_products():
     # Define plant names for each category
     plant_names_by_category = PRODUCTS
+
     # Define product data
     products_data = [
         {
@@ -20,8 +21,8 @@ def add_products():
             "status": "published",
             "ordering": i,
             "special": True if i % 2 == 0 else False,  # Set special to True for even indices
-            "price": randint(100000, 200000) * 1000,  # Price ending with "000"
-            "price_sale": randint(80000, 150000) * 1000 if i % 3 == 0 else None,  # Random price sale for every third product
+            "price": randint(100, 2000) * 1000,  # Price ending with "000"
+            "price_sale": randint(150, 1000) * 1000 * randint(80, 100)/100 if i % 3 == 0 else None,  # Random price sale for every third product
             "summary": plant_data["summary"],
             "content": plant_data["content"],
             "image": None,

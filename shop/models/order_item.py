@@ -6,10 +6,11 @@ from shop.define import *
 
 # Create your models here.
 
+
 class OrderItem(models.Model):
-    class Meta: 
-        verbose_name_plural=TABLE_ORDER_ITEM_SHOW
-    
+    class Meta:
+        verbose_name_plural = TABLE_ORDER_ITEM_SHOW
+
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()

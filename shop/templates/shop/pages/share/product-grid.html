@@ -22,9 +22,9 @@
     </div>
     <div class="product__item__text">
       <h6>
-        <a href="{{ item.get_absolute_url }}"
-          >{{ item.name|highlight_shop:keyword }}</a
-        >
+        <a href="{{ item.get_absolute_url }}">
+          {{ item.name|highlight_shop:keyword }}
+        </a>
       </h6>
       <h6 class="price_old">{% get_price_old item.price item.price_sale %}</h6>
       <h5>{{ item.price_real|format_currency_vn}}</h5>

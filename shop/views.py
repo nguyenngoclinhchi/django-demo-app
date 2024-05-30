@@ -18,41 +18,43 @@ from rest_framework.permissions import (
 )
 
 # Create your views here.
+
+
 def index(request):
     # by default, it will goes to index of news app
-    # WHY? In DJango, when we render, it will run all templates folder 
-    # without differentiating, it will just go to the first 
+    # WHY? In DJango, when we render, it will run all templates folder
+    # without differentiating, it will just go to the first
     # /templates/ folder in the folder structure
 
     items_blog = Blog.objects.filter(
         status=APP_VALUE_STATUS_ACTIVE,
-        publish_date__lte =timezone.now()).order_by('-publish_date')
+        publish_date__lte=timezone.now()).order_by('-publish_date')
 
     items_category = Category.objects.filter(
-        status=APP_VALUE_STATUS_ACTIVE, 
+        status=APP_VALUE_STATUS_ACTIVE,
         is_homepage=True).order_by("ordering")
 
-    for category in items_category: 
+    for category in items_category:
         category.product_filter = category.product_set.filter(
             status=APP_VALUE_STATUS_ACTIVE,
             special=True
-        ).order_by("-id") # add the product by the newest item
+        ).order_by("-id")  # add the product by the newest item
 
     items_latest_product = chunked(
         Product.objects.filter(
-            status=APP_VALUE_STATUS_ACTIVE).order_by("-id")[:SETTINGS_PRODUCT_LATEST_TOTAL], 
+            status=APP_VALUE_STATUS_ACTIVE).order_by("-id")[:SETTINGS_PRODUCT_LATEST_TOTAL],
         SETTINGS_PRODUCT_PER_COL)
-    
+
     items_hot_product = chunked(
         Product.objects.filter(
-            status=APP_VALUE_STATUS_ACTIVE).order_by("-total_sold")[:SETTINGS_PRODUCT_HOT_TOTAL], 
+            status=APP_VALUE_STATUS_ACTIVE).order_by("-total_sold")[:SETTINGS_PRODUCT_HOT_TOTAL],
         SETTINGS_PRODUCT_PER_COL)
-    
+
     items_random_product = chunked(
         Product.objects.filter(
-            status=APP_VALUE_STATUS_ACTIVE).order_by("?")[:SETTINGS_PRODUCT_RANDOM_TOTAL], 
+            status=APP_VALUE_STATUS_ACTIVE).order_by("?")[:SETTINGS_PRODUCT_RANDOM_TOTAL],
         SETTINGS_PRODUCT_PER_COL)
-    
+
     return render(request, APP_PATH_SHOP_PAGE + "index.html", {
         "title_page": "Homepage",
         "items_category": items_category,
@@ -62,10 +64,11 @@ def index(request):
         "items_blog": items_blog
     })
 
-def product(request, product_slug, product_id): 
+
+def product(request, product_slug, product_id):
     item_product = get_object_or_404(
         Product,
-        slug=product_slug, 
+        slug=product_slug,
         id=product_id,
         status=APP_VALUE_STATUS_ACTIVE)
 
@@ -79,7 +82,8 @@ def product(request, product_slug, product_id):
         "items_product_related": items_product_related
     })
 
-def category(request, category_slug="shop"): 
+
+def category(request, category_slug="shop"):
     item_category = None
     items_product = []
     planting_methods = PlantingMethod.objects.filter(
@@ -88,18 +92,18 @@ def category(request, category_slug="shop"):
         status=APP_VALUE_STATUS_ACTIVE).order_by("ordering")[:SETTINGS_CATEGORIES_TOTAL]
     items_latest_product = chunked(
         Product.objects.filter(
-            status=APP_VALUE_STATUS_ACTIVE).order_by("-id")[:SETTINGS_PRODUCT_LATEST_TOTAL_SIDEBAR], 
+            status=APP_VALUE_STATUS_ACTIVE).order_by("-id")[:SETTINGS_PRODUCT_LATEST_TOTAL_SIDEBAR],
         SETTINGS_PRODUCT_PER_COL)
 
-    if category_slug != "shop": 
+    if category_slug != "shop":
         item_category = get_object_or_404(
             Category,
-            slug=category_slug, 
+            slug=category_slug,
             status=APP_VALUE_STATUS_ACTIVE)
         items_product = Product.objects.filter(
             category=item_category,
             status=APP_VALUE_STATUS_ACTIVE).order_by("-id")
-    else: 
+    else:
         items_product = Product.objects.filter(
             status=APP_VALUE_STATUS_ACTIVE).order_by("-id")
 
@@ -112,29 +116,33 @@ def category(request, category_slug="shop"):
         "keyword": request.GET.get("keyword", "")
     }
     items_product = items_product.order_by(params["order"]+"_real")
-    
-    if params["minPrice"]: 
-        items_product = items_product.filter(price_real__gte=params["minPrice"])
 
-    if params["maxPrice"]: 
-        items_product = items_product.filter(price_real__lte=params["maxPrice"])
-    
-    if params["planting"]: 
+    if params["minPrice"]:
+        items_product = items_product.filter(
+            price_real__gte=params["minPrice"])
+
+    if params["maxPrice"]:
+        items_product = items_product.filter(
+            price_real__lte=params["maxPrice"])
+
+    if params["planting"]:
         # planting methods having id same as params[planting]
-        items_product = items_product.filter(planting_methods__id=params["planting"])
-    
-    if params["keyword"]: 
+        items_product = items_product.filter(
+            planting_methods__id=params["planting"])
+
+    if params["keyword"]:
         items_product = items_product.filter(
             # regular expression, iregex = in-case-sensitive regular regex
-            name__iregex = escape(params["keyword"])
+            name__iregex=escape(params["keyword"])
         ).order_by("-id")
 
     # count before paginator
     products_count = items_product.all().count()
 
-    paginator = Paginator(items_product, per_page=SETTINGS_PRODUCT_NUMBER_PER_PAGE)
-    items_product = paginator.get_page(request.GET.get("page")) 
-    
+    paginator = Paginator(
+        items_product, per_page=SETTINGS_PRODUCT_NUMBER_PER_PAGE)
+    items_product = paginator.get_page(request.GET.get("page"))
+
     return render(request, APP_PATH_SHOP_PAGE + "category.html", {
         "title_page": item_category.name if item_category else "Shop",
         "item_category": item_category,
@@ -149,13 +157,15 @@ def category(request, category_slug="shop"):
 
 # when the user click on add to cart, we have to save the item and its quantity in SESSION
 # Session is where the workers work
-def cart(request): 
+
+
+def cart(request):
     items_product_cart = []
     total_price = 0
     # When we close the browser, everything in the session is deleted
-    if "cart" in request.session: 
+    if "cart" in request.session:
         cart = request.session.get("cart")
-        for product_id, quantity in cart.items(): 
+        for product_id, quantity in cart.items():
             product = Product.objects.get(id=product_id)
             item_price = product.price_real*quantity
             total_price += item_price
@@ -168,25 +178,26 @@ def cart(request):
 
     return render(request, APP_PATH_SHOP_PAGE + "cart.html", {
         "title_page": "Cart",
-        "total_price": total_price, 
+        "total_price": total_price,
         "items_product_cart": items_product_cart
     })
 
-def checkout(request): 
+
+def checkout(request):
     cart = request.session.get("cart", {})
     form = CheckoutForm()
-    if not cart: 
+    if not cart:
         absolute_url = request.build_absolute_uri(reverse("shop:cart"))
         return redirect(absolute_url)
 
-    if request.method == "POST": 
-        form = CheckoutForm(request.POST) # validate
+    if request.method == "POST":
+        form = CheckoutForm(request.POST)  # validate
         if form.is_valid():
             return checkout_post(request, form, cart)
 
     items_product_checkout = []
     total_order = 0
-    for product_id, quantity in cart.items(): 
+    for product_id, quantity in cart.items():
         product = Product.objects.get(id=product_id)
         total = product.price_real*quantity
         total_order += total
@@ -196,11 +207,12 @@ def checkout(request):
             "quantity": quantity
         })
     return render(request, APP_PATH_SHOP_PAGE + "checkout.html", {
-        "title_page": "Checkout Order", 
+        "title_page": "Checkout Order",
         "items_product_checkout": items_product_checkout,
         "total_order": total_order,
         "form": form
     })
+
 
 def checkout_post(request, form, cart):
     name = form.cleaned_data["name"]
@@ -210,7 +222,7 @@ def checkout_post(request, form, cart):
     code = generate_order_code(length=SETTINGS_GENERATE_CODE_ORDER_LENGTH)
     # save ORDER and ORDER_ITEM
     order = Order.objects.create(
-        code=code, 
+        code=code,
         name=name,
         email=email,
         phone=phone,
@@ -219,7 +231,7 @@ def checkout_post(request, form, cart):
     total_order = 0
     quantity_order = 0
     items_order_mail = []
-    for product_id, quantity in cart.items(): 
+    for product_id, quantity in cart.items():
         product = Product.objects.get(id=product_id)
         price = product.price_real
         total = price*quantity
@@ -246,26 +258,27 @@ def checkout_post(request, form, cart):
     link_order_check = request.build_absolute_uri(reverse("shop:check_order"))
 
     mail_content = mail_content_order(
-        order_code=code, 
-        name=name, 
+        order_code=code,
+        name=name,
         email=email,
-        phone=phone, 
-        address=address, 
-        total_order=total_order, 
-        items_order_mail=items_order_mail, 
+        phone=phone,
+        address=address,
+        total_order=total_order,
+        items_order_mail=items_order_mail,
         link_order_check=link_order_check
     )
     send_mail(
-        NOTIFY_EMAIL_SUBJECT_SUCCESS_ORDER, 
+        NOTIFY_EMAIL_SUBJECT_SUCCESS_ORDER,
         content=mail_content,
-        email_to=[email], 
+        email_to=[email],
         email_bcc=[ADMIN_EMAIL_RECEIVE]
     )
-    absolute_url = request.build_absolute_uri(reverse("shop:success")) + '?t=order'
+    absolute_url = request.build_absolute_uri(
+        reverse("shop:success")) + '?t=order'
     return redirect(absolute_url)
 
 
-def success(request): 
+def success(request):
     notify = NOTIFY_ORDER_SUCCESS
     t = request.GET.get('t')
     if t == "contact":
@@ -275,9 +288,10 @@ def success(request):
         "notify": notify
     })
 
+
 def contact(request):
     form = ContactForm()
-    if request.method == "POST": 
+    if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
             return contact_post(request, form)
@@ -287,6 +301,7 @@ def contact(request):
         "form": form,
     })
 
+
 def contact_post(request, form):
     name = form.cleaned_data["name"]
     email = form.cleaned_data["email"]
@@ -295,56 +310,60 @@ def contact_post(request, form):
 
     contacted = False
     Contact.objects.create(
-        name=name, 
-        email=email, 
-        phone=phone, 
-        message=message, 
+        name=name,
+        email=email,
+        phone=phone,
+        message=message,
         contacted=contacted
     )
-    
+
     # SEND MAIL FOR CONTACT
     mail_content = mail_content_contact(name, email, phone, message)
     send_mail(
-        NOTIFY_EMAIL_SUBJECT_SUCCESS_CONTACT, 
-        content=mail_content, 
-        email_to=[email], 
+        NOTIFY_EMAIL_SUBJECT_SUCCESS_CONTACT,
+        content=mail_content,
+        email_to=[email],
         email_bcc=[ADMIN_EMAIL_RECEIVE]
     )
-    
-    absolute_url = request.build_absolute_uri(reverse("shop:success")) + '?t=contact'
+
+    absolute_url = request.build_absolute_uri(
+        reverse("shop:success")) + '?t=contact'
     return redirect(absolute_url)
 
-def add_to_cart(request): 
-    if request.method == "POST": 
+
+def add_to_cart(request):
+    if request.method == "POST":
         product_id = request.POST.get("id")
         product_quantity = request.POST.get("quantity")
         cart = request.session.get("cart", {})
         # client already add same product beforehand, so accumulate
-        if product_id in cart: 
+        if product_id in cart:
             cart[product_id] += int(product_quantity)
         else:
             cart[product_id] = int(product_quantity)
 
         request.session["cart"] = cart
-        request.session.modified = True # signalling the session change, so session is saved again
+        # signalling the session change, so session is saved again
+        request.session.modified = True
 
     absolute_url = request.build_absolute_uri(reverse("shop:cart"))
     return redirect(absolute_url)
 
-def update_cart(request): 
+
+def update_cart(request):
     product_id = str(request.GET.get("productId"))
     action = request.GET.get("action")
     cart = request.session.get("cart", {})
     print("HELLO I GET CART", cart)
-    if product_id in cart: 
-        if action == "decrease": 
-            if cart[product_id] > 1: 
+    if product_id in cart:
+        if action == "decrease":
+            if cart[product_id] > 1:
                 cart[product_id] -= 1
-            else: 
+            else:
                 del cart[product_id]
-        elif action == "increase": 
+        elif action == "increase":
             cart[product_id] += 1
-        elif action == "delete": 
+        elif action == "delete":
             del cart[product_id]
 
     request.session["cart"] = cart
@@ -352,26 +371,27 @@ def update_cart(request):
 
     return redirect(absolute_url)
 
-def check_order(request): 
-    if request.method == "POST": 
+
+def check_order(request):
+    if request.method == "POST":
         return check_order_post(request)
-    
+
     return render(request, APP_PATH_SHOP_PAGE + "check-order.html", {
         "title_page": "Check order",
     })
 
 
 def check_order_post(request):
-    order_code = request.POST.get('code', '').strip() # same as trim in JS
+    order_code = request.POST.get('code', '').strip()  # same as trim in JS
     error_message = ""
     item_order = None
 
-    if order_code == "": 
+    if order_code == "":
         error_message = NOTIFY_ORDER_CODE_EMPTY_MESSAGE
-    else: 
-        try: 
+    else:
+        try:
             item_order = Order.objects.get(code=order_code)
-        except Order.DoesNotExist: # exception for order cannot be found
+        except Order.DoesNotExist:  # exception for order cannot be found
             error_message = NOTIFY_ORDER_CODE_NOT_FOUND_MESSAGE
 
     return render(request, APP_PATH_SHOP_PAGE + "check-order.html", {
@@ -381,20 +401,21 @@ def check_order_post(request):
         "item_order": item_order
     })
 
+
 def blog(request, blog_slug, blog_id):
     item_blog = get_object_or_404(
-        Blog, 
-        slug=blog_slug, 
+        Blog,
+        slug=blog_slug,
         status=APP_VALUE_STATUS_ACTIVE,
-        publish_date__lte =timezone.now()
+        publish_date__lte=timezone.now()
     )
 
     items_blog_related = chunked(
         Blog.objects.filter(
             status=APP_VALUE_STATUS_ACTIVE,
-            publish_date__lte =timezone.now()).order_by('-publish_date').exclude(slug=item_blog.slug)[:SETTINGS_ITEMS_BLOG_RELATED], 
+            publish_date__lte=timezone.now()).order_by('-publish_date').exclude(slug=item_blog.slug)[:SETTINGS_ITEMS_BLOG_RELATED],
         SETTINGS_PRODUCT_PER_COL)
-    
+
     items_blog = chunked(Blog.objects.all(), SETTINGS_PRODUCT_PER_COL)
 
     return render(request, APP_PATH_SHOP_PAGE + "blog.html", {
@@ -404,42 +425,50 @@ def blog(request, blog_slug, blog_id):
         "items_blog": items_blog[:3]
     })
 
-# ---------------------------- API DOCUMENTATIONS ----------------------------
+# ---------------------------- API DOCUMENTATIONS -------------------------------
+
 
 class ShopCategoryListCreateAPIView(ListCreateAPIViewBase):
     serializer_class = ShopCategorySerializer
     model_class = Category
     permission_classes = [IsAuthenticated]
 
+
 class ShopCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIViewBase):
     serializer_class = ShopCategorySerializer
     model_class = Category
     permission_classes = [IsAuthenticated]
+
 
 class ShopProductListCreateAPIView(ListCreateAPIViewBase):
     serializer_class = ShopProductSerializer
     model_class = Product
     permission_classes = [IsAuthenticated]
 
+
 class ShopProductRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIViewBase):
     serializer_class = ShopProductSerializer
     model_class = Product
     permission_classes = [IsAuthenticated]
+
 
 class ShopBlogListCreateAPIView(ListCreateAPIViewBase):
     serializer_class = ShopBlogSerializer
     model_class = Blog
     permission_classes = [IsAuthenticated]
 
+
 class ShopBlogRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIViewBase):
     serializer_class = ShopBlogSerializer
     model_class = Blog
     permission_classes = [IsAuthenticated]
 
+
 class ShopPlantingMethodListCreateAPIView(ListCreateAPIViewBase):
     serializer_class = PlantingMethodSerializer
     model_class = PlantingMethod
     permission_classes = [IsAuthenticated]
+
 
 class ShopPlantingMethodRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIViewBase):
     serializer_class = PlantingMethodSerializer

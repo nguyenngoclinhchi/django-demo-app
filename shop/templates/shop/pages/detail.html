@@ -14,7 +14,7 @@
           <div class="product__details__pic__item">
             <img
               class="product__details__pic__item--large"
-              src="{% static 'shop/assets/img-demo/2bacb687-2781-49b0-ac36-bca2ae23abda.jpg' %}"
+              src="{{item_product.image.url}}"
               alt=""
             />
           </div>
@@ -98,8 +98,9 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      {% render_share_shop 'product-grid.html' items_product_related %}
+    <div class="row product-related-item" data-id="{{item_product.id}}">
+      {% comment %} {% render_share_shop 'product-grid.html'
+      items_product_related %} {% endcomment %}
     </div>
   </div>
 </section>

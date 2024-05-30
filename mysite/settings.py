@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 # By default, INSTALLED_APPS contains the following apps, all of which come with Django:
 # django.contrib.admin – The admin site. You’ll use it shortly.
@@ -39,6 +38,7 @@ ALLOWED_HOSTS = []
 # django.contrib.messages – A messaging framework.
 # django.contrib.staticfiles – A framework for managing static files.
 INSTALLED_APPS = [
+    'api.apps.ApiConfig',
     'news.apps.NewsConfig',
     'shop.apps.ShopConfig',
     'healthapp.apps.HealthappConfig',
@@ -49,8 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cleanup.apps.CleanupConfig',
     'django.contrib.humanize',
+    'django_cleanup.apps.CleanupConfig',
     'django_extensions',
     'oauth2_provider',
     'rest_framework',
@@ -120,11 +120,11 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     'default': {
-        'ENGINE' : 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'django-auth-demo',
         'USER': 'root',
         # 'PASSWORD': 'password',
-        'HOST' : 'localhost',
+        'HOST': 'localhost',
         'PORT': '4306',
     }
 }
@@ -160,14 +160,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+# DO NOT USE STATIC_ROOT else you will get trouble
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR,'static')
-STATICFILES_DIRS =[
-    os.path.join(BASE_DIR,'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
 ]
 
-MEDIA_URL ='/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Default primary key field type
@@ -192,11 +192,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
     ],
-    'DEFAULT_FILTER_BACKENDS' : [ 
-        'django_filters.rest_framework.DjangoFilterBackend' 
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
     ],
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 3,
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
 }
 
 SIMPLE_JWT = {
@@ -206,31 +207,3 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     # "Bearer <Token>"
 }
-
-# SWAGGER_SETTINGS = {
-#     'USE_SESSION_AUTH': False,
-#     'SECURITY_DEFINITIONS': {
-#         'Linh Chi API - Swagger': {
-#             'type': 'oauth2',
-#             'authorizationUrl': '/o/authorize',
-#             'tokenUrl': '/o/token/',
-#             'flow': 'accessCode',
-#             'scopes': {
-#                 'read': 'Read scope',
-#                 'write': 'Write scope',
-#                 'groups': 'Access to your groups'
-#             }
-#         }
-#     },
-#     'OAUTH2_REDIRECT_URL': 'http://localhost:8000/news',
-    # 'OAUTH2_CONFIG': {
-    #     'clientId': 'FUrOrsKRSDN1su2R15l2RVMNor07PNhqUXhKhlSc',
-    #     'clientSecret': 'rHu3UjgpnEavL0T3FAGOR23shtzuRCtC4jMaELqGdhtIQrta2SSyHG5JqlvuUnKbxHaLjszEH9ftDdoncpnI3irtF7LWp2XqWO2Vu0WjV3BKGq8etA1fOw5HzXoYfs00',
-    #     'appName': 'mysite'
-    # },
-# }
-
-# LOGIN_URL = '/admin/login/'
-# ID: FUrOrsKRSDN1su2R15l2RVMNor07PNhqUXhKhlSc
-# SECRET: rHu3UjgpnEavL0T3FAGOR23shtzuRCtC4jMaELqGdhtIQrta2SSyHG5JqlvuUnKbxHaLjszEH9ftDdoncpnI3irtF7LWp2XqWO2Vu0WjV3BKGq8etA1fOw5HzXoYfs00
-# {'access_token': 'Pe9YSHms8oZdMMTAO13LwebUeYhECa', 'expires_in': 36000, 'token_type': 'Bearer', 'scope': 'read write groups'}
